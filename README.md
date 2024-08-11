@@ -18,7 +18,7 @@ This screenshot shows how the IP Lookup looks when running.
 You can install the required Python libraries using pip:
 
 ```bash
-pip3 install -r requirements. txt
+pip3 install -r requirements.txt
 ```
 
 ## Usage
