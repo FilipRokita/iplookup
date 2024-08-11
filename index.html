@@ -66,6 +66,13 @@
             white-space: pre-wrap;
             overflow: auto;
         }
+        .download-button {
+            margin-top: 20px;
+            background-color: #28a745;
+        }
+        .download-button:hover {
+            background-color: #218838;
+        }
     </style>
 </head>
 <body>
@@ -74,9 +81,12 @@
         <input type="text" id="ipAddress" placeholder="Enter IP address" aria-label="IP address input"/>
         <button onclick="fetchIPInfo()">Lookup</button>
         <div id="result" aria-live="polite"></div>
+        <button class="download-button" id="downloadBtn" onclick="downloadJSON()" style="display:none;">Download JSON</button>
     </div>
 
     <script>
+        let currentData = null;
+
         async function fetchIPInfo() {
             const ipAddress = document.getElementById('ipAddress').value.trim();
             if (!ipAddress) {
@@ -85,15 +95,18 @@
             }
 
             const resultElement = document.getElementById('result');
+            const downloadBtn = document.getElementById('downloadBtn');
             resultElement.innerHTML = 'Fetching data...';
+            downloadBtn.style.display = 'none';
 
             try {
                 const response = await fetch(`/lookup?ip=${encodeURIComponent(ipAddress)}`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-                const data = await response.json();
-                resultElement.innerHTML = formatAsTable(data);
+                currentData = await response.json();
+                resultElement.innerHTML = formatAsTable(currentData);
+                downloadBtn.style.display = 'inline-block'; // Show the download button
             } catch (error) {
                 resultElement.textContent = `Error: ${error.message}`;
             }
@@ -117,6 +130,22 @@
             }
             html += '</table>';
             return html;
+        }
+
+        function downloadJSON() {
+            if (!currentData) {
+                alert("No data available to download.");
+                return;
+            }
+
+            const blob = new Blob([JSON.stringify(currentData, null, 4)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'ip_lookup_result.json';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
     </script>
 </body>
