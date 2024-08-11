@@ -15,14 +15,10 @@ This screenshot shows how the IP Lookup looks when running.
 
 ## Requirements
 
-- Python 3.x
-- Flask
-- Requests library
-
 You can install the required Python libraries using pip:
 
 ```bash
-pip install flask requests
+pip3 install -r requirements. txt
 ```
 
 ## Usage
@@ -34,7 +30,7 @@ pip install flask requests
    To lookup an IP address, run:
 
    ```bash
-   python iplookup.py <ip-address>
+   python3 iplookup.py <ip-address>
    ```
 
    This will output the results from all the geolocation services in JSON format.
@@ -44,7 +40,7 @@ pip install flask requests
    To save the results to a file named `ip_lookup_result.json`, use:
 
    ```bash
-   python iplookup.py -s <ip-address>
+   python3 iplookup.py -s <ip-address>
    ```
 
 ### Web Interface
@@ -52,7 +48,7 @@ pip install flask requests
 1. Start the Flask application:
 
    ```bash
-   python app.py
+   python3 app.py
    ```
 
 2. Open your web browser and navigate to `http://localhost:5000`.
