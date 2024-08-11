@@ -8,22 +8,23 @@
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             background-color: #f4f4f4;
         }
         h1 {
             text-align: center;
+            margin-top: 20px;
         }
         .container {
             max-width: 800px;
-            margin: auto;
+            margin: 20px auto;
             background: #fff;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         input[type="text"] {
-            width: 100%;
+            width: calc(100% - 22px);
             padding: 10px;
             margin-bottom: 10px;
             border: 1px solid #ccc;
@@ -41,10 +42,28 @@
         button:hover {
             background-color: #0056b3;
         }
-        pre {
-            background: #f1f1f1;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            table-layout: auto; /* Adjusts column widths based on content */
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
             padding: 10px;
-            border-radius: 4px;
+            text-align: left;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .json {
+            max-width: 100%;
+            white-space: pre-wrap;
             overflow: auto;
         }
     </style>
@@ -52,29 +71,52 @@
 <body>
     <div class="container">
         <h1>IP Lookup</h1>
-        <input type="text" id="ipAddress" placeholder="Enter IP address" />
+        <input type="text" id="ipAddress" placeholder="Enter IP address" aria-label="IP address input"/>
         <button onclick="fetchIPInfo()">Lookup</button>
-        <pre id="result"></pre>
+        <div id="result" aria-live="polite"></div>
     </div>
 
     <script>
         async function fetchIPInfo() {
-            const ipAddress = document.getElementById('ipAddress').value;
+            const ipAddress = document.getElementById('ipAddress').value.trim();
             if (!ipAddress) {
                 alert("Please enter an IP address.");
                 return;
             }
 
             const resultElement = document.getElementById('result');
-            resultElement.textContent = 'Fetching data...';
+            resultElement.innerHTML = 'Fetching data...';
 
             try {
-                const response = await fetch(`/lookup?ip=${ipAddress}`);
+                const response = await fetch(`/lookup?ip=${encodeURIComponent(ipAddress)}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
                 const data = await response.json();
-                resultElement.textContent = JSON.stringify(data, null, 4);
+                resultElement.innerHTML = formatAsTable(data);
             } catch (error) {
                 resultElement.textContent = `Error: ${error.message}`;
             }
+        }
+
+        function formatAsTable(data) {
+            let html = '<table>';
+            for (const [apiName, apiData] of Object.entries(data)) {
+                html += `<tr><th colspan="2">${apiName}</th></tr>`;
+                if (typeof apiData === 'object' && apiData !== null) {
+                    for (const [key, value] of Object.entries(apiData)) {
+                        if (typeof value === 'object') {
+                            html += `<tr><td>${key}</td><td><pre class="json">${JSON.stringify(value, null, 2)}</pre></td></tr>`;
+                        } else {
+                            html += `<tr><td>${key}</td><td>${value}</td></tr>`;
+                        }
+                    }
+                } else {
+                    html += `<tr><td>${apiName}</td><td>${apiData}</td></tr>`;
+                }
+            }
+            html += '</table>';
+            return html;
         }
     </script>
 </body>
