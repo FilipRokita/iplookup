@@ -2,6 +2,11 @@
 
 This project consists of a Python script and a web application to perform IP address lookups using various IP geolocation services. The IP lookup can be executed via command line or through a web interface.
 
+## Screenshot
+![Screenshot of the application](screenshot.png)
+
+This screenshot shows how the IP Lookup looks when running.
+
 ## Components
 
 1. **`iplookup.py`**: A Python script that queries multiple IP geolocation services and returns the results.
